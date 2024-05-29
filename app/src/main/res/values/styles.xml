@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="StatusBarStyle" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:statusBarColor">#02173B</item>
+    </style>
+</resources>

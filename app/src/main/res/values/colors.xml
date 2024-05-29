@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="yellow_bkg">#F7E64F</color>
+    <color name="blue_bkg">#02173B</color>
+    <color name="splashBackgroundColor">#02173B</color>
+</resources>

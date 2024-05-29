@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/blue_bkg">
+
+    <TextView
+        android:id="@+id/splashTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:fontFamily="@font/montserrat"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:text="LOOKOUT"
+        android:textColor="#FF5733"
+        android:textSize="50sp" />
+
+    <TextView
+        android:id="@+id/splashTextView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/splashTextView"
+        android:layout_centerHorizontal="true"
+        android:text="Proteger é o nosso negócio!"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="@color/white" />
+
+</RelativeLayout>

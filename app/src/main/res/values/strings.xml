@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">LOOKOUT</string>
+    <string name="fall_detected_text">Mudança brusca detectada. Possível queda.</string>
+</resources>
