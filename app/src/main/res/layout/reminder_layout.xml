@@ -1,39 +1,55 @@
 <!-- reminder_layout.xml -->
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:layout_height="match_parent">
 
-    <EditText
-        android:id="@+id/reminderMessageEditText"
+    <!-- Background image -->
+    <ImageView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Digite a mensagem do lembrete"
-        android:inputType="textMultiLine"
-        android:gravity="start"
-        android:layout_marginBottom="16dp"/>
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/white_background"
+        android:contentDescription="Background Image"
+        android:alpha="0.2" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Escolha o horário do lembrete"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="16dp"/>
-
-    <TimePicker
-        android:id="@+id/timePicker"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"/>
-
-    <Button
-        android:id="@+id/addReminderButton"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Adicionar Lembrete"
-        android:layout_marginTop="16dp"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp">
 
-</LinearLayout>
+        <EditText
+            android:id="@+id/reminderMessageEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Digite a mensagem do lembrete"
+            android:inputType="textMultiLine"
+            android:gravity="start"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Escolha o horário do lembrete"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp"/>
+
+        <TimePicker
+            android:id="@+id/timePicker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:theme="@style/MyTimePickerTheme"/>
+
+        <Button
+            android:id="@+id/addReminderButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Adicionar Lembrete"
+            android:layout_marginTop="16dp"/>
+
+    </LinearLayout>
+
+</FrameLayout>
