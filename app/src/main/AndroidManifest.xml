@@ -40,7 +40,7 @@
             android:name=".CadastroNumero"
             android:exported="false" />
         <activity
-            android:name=".SobreNos"
+            android:name=".AddReminderActivity"
             android:exported="false" />
         <activity
             android:name=".SplashScreenActivity"

@@ -1,7 +1,6 @@
 package com.example.idosos;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -12,6 +11,7 @@ import android.telephony.SmsManager;
 import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 public class EnviarSMS {
     private String mensagemBase = "LOOKOUT! O Dispositivo detectou uma possível queda!";
@@ -28,14 +28,10 @@ public class EnviarSMS {
         String numeroDestino2 = sharedPreferences.getString("telefone_contato_2", null);
 
         if (numeroDestino1 != null || numeroDestino2 != null) {
-            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.SEND_SMS}, 1);
-            } else {
-                enviarMensagemDeAlerta(numeroDestino1);
-                enviarMensagemDeAlerta(numeroDestino2);
-                obterLocalizacaoEEnviarLink(numeroDestino1);
-                obterLocalizacaoEEnviarLink(numeroDestino2);
-            }
+            enviarMensagemDeAlerta(numeroDestino1);
+            enviarMensagemDeAlerta(numeroDestino2);
+            obterLocalizacaoEEnviarLink(numeroDestino1);
+            obterLocalizacaoEEnviarLink(numeroDestino2);
         } else {
             Toast.makeText(context, "Número de destino não cadastrado.", Toast.LENGTH_SHORT).show();
         }
@@ -48,17 +44,12 @@ public class EnviarSMS {
     }
 
     private void obterLocalizacaoEEnviarLink(final String numeroDestino) {
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-            return;
-        }
 
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         LocationListener locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                String linkLocalizacao = "https://www.google.com/maps/search/?api=1&query=" + location.getLatitude() + "," + location.getLongitude();
+                String linkLocalizacao = "https://google.com/maps/search/?api=1&query=" + location.getLatitude() + "," + location.getLongitude();
                 enviarSMS(numeroDestino, linkLocalizacao);
                 locationManager.removeUpdates(this);
             }
@@ -73,7 +64,6 @@ public class EnviarSMS {
             public void onProviderDisabled(String provider) {}
         };
 
-        locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, locationListener, null);
     }
 
     private void enviarSMS(String numeroDestino, String mensagem) {
