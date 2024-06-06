@@ -49,7 +49,7 @@ public class QuedaDetect implements SensorEventListener {
 
     // Constants for fall detection criteria
     private static final double AR_THRESHOLD = 10; //Aceleração Resultante
-    private static final double VA_THRESHOLD = 23; //Variação Angular
+    private static final double VA_THRESHOLD = 35; //Variação Angular
     private static final double MA_THRESHOLD = 105.5; //Mudança no Angulo
 
     private List<Map<AccelerometerAxis, Double>> accelerometerValues = new ArrayList<>();

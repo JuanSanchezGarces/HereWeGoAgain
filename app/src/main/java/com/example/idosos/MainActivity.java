@@ -1,7 +1,10 @@
 package com.example.idosos;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -10,6 +13,8 @@ import android.content.SharedPreferences;
 import android.hardware.SensorManager;
 import android.view.View;
 import androidx.cardview.widget.CardView;
+import androidx.core.app.ActivityCompat;
+
 import android.widget.TextView;
 
 import android.view.animation.Animation;
@@ -32,6 +37,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Solicitar permissões necessárias
+        solicitarPermissoes();
+
         Intent serviceIntent = new Intent(this, QuedaDetectService.class);
         this.startService(serviceIntent);
 
@@ -41,12 +49,17 @@ public class MainActivity extends AppCompatActivity {
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
 
-        // Botão para ir para a tela Lembretes
+        // Inicializar outros componentes e configurações
+
+        // Encontrar o CardView dos lembretes
         CardView reminderCardView = findViewById(R.id.ReminderView);
+
+        // Adicionar um OnClickListener ao CardView dos lembretes
         reminderCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, ReminderReceiver.class);
+                // Abrir a AddReminderActivity quando o CardView for clicado
+                Intent intent = new Intent(MainActivity.this, AddReminderActivity.class);
                 startActivity(intent);
             }
         });
@@ -124,5 +137,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+    }
+
+    // Método para solicitar permissões necessárias
+    private void solicitarPermissoes() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED ||
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+        }
     }
 }
