@@ -1,8 +1,9 @@
-<!-- reminder_layout.xml -->
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".AddReminderActivity">
 
     <!-- Background image -->
     <ImageView
@@ -19,37 +20,101 @@
         android:orientation="vertical"
         android:padding="16dp">
 
+        <!-- Title EditText -->
         <EditText
-            android:id="@+id/reminderMessageEditText"
+            android:id="@+id/reminderTitleEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Digite a mensagem do lembrete"
-            android:inputType="textMultiLine"
+            android:hint="Título"
+            android:inputType="text"
             android:gravity="start"
             android:layout_marginBottom="16dp"/>
 
-        <TextView
-            android:layout_width="wrap_content"
+        <!-- Date Picker Icon -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Escolha o horário do lembrete"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="16dp"/>
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="16dp">
 
-        <TimePicker
-            android:id="@+id/timePicker"
-            android:layout_width="wrap_content"
+            <ImageView
+                android:id="@+id/calendarIcon"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:src="@drawable/ic_calendar"
+                android:contentDescription="Escolher Data"
+                android:padding="8dp" />
+
+            <TextView
+                android:id="@+id/selectedDateTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Escolha a data"
+                android:textSize="16sp"
+                android:layout_marginStart="8dp"/>
+        </LinearLayout>
+
+        <!-- Time Picker Icon -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:theme="@style/MyTimePickerTheme"/>
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="16dp">
 
+            <ImageView
+                android:id="@+id/timeIcon"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:src="@drawable/ic_clock"
+                android:contentDescription="Escolher Hora"
+                android:padding="8dp" />
+
+            <TextView
+                android:id="@+id/selectedTimeTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Escolha o horário"
+                android:textSize="16sp"
+                android:layout_marginStart="8dp"/>
+        </LinearLayout>
+
+        <!-- Add Reminder Button -->
         <Button
             android:id="@+id/addReminderButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Adicionar Lembrete"
+            android:layout_marginTop="16dp"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#FF5733"
+            android:padding="12dp"
+            android:fontFamily="@font/montserrat"/>
+
+        <!-- RecyclerView for Saved Reminders -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/remindersRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:layout_marginTop="16dp"/>
 
-    </LinearLayout>
+        <!-- Espaçador vazio para empurrar o botão para a parte inferior -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
+        <Button
+            android:id="@+id/voltarParaPaginaInicial"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="Voltar à Página Inicial"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#FF5733"
+            android:layout_marginTop="16dp"
+            android:onClick="voltarParaPaginaInicial"
+            android:fontFamily="@font/montserrat" />
+    </LinearLayout>
 </FrameLayout>

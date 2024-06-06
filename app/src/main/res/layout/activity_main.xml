@@ -105,25 +105,28 @@
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="11dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp">
 
-                    <ImageView
-                        android:layout_width="64dp"
-                        android:layout_height="64dp"
-                        android:src="@drawable/ic_reminder"
-                        android:contentDescription="Reminder Icon" />
+                <ImageView
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:src="@drawable/ic_reminder"
+                    android:contentDescription="Reminder Icon" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="LEMBRETES"
-                        android:textColor="#3E50B4"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-                        android:layout_marginTop="8dp"
-                        android:gravity="center" />
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
+                <TextView
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:text="LEMBRETES"
+                    android:textColor="#3E50B4"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center" />
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
 
             <!-- Contacts Button -->
             <androidx.cardview.widget.CardView
