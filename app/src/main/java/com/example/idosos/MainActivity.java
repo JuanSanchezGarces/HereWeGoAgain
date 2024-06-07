@@ -17,6 +17,12 @@ import androidx.core.app.ActivityCompat;
 
 import android.widget.TextView;
 
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.MotionEvent;
+
+import android.widget.LinearLayout;
+
 public class MainActivity extends AppCompatActivity {
     private SensorManager sensorManager;
     private Sensor accelerometer;
@@ -68,12 +74,24 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Botão de Pânico
-        CardView panicCardView = findViewById(R.id.panicCardView);
-        panicCardView.setOnClickListener(new View.OnClickListener() {
+        // Animação de escala para o botão de pânico
+        final Animation scale = AnimationUtils.loadAnimation(this, R.anim.scale);
+        final CardView panicCardView = findViewById(R.id.panicCardView);
+        final LinearLayout panicAnimationContainer = findViewById(R.id.panicAnimationContainer);
+
+        panicCardView.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
-                enviarMensagemPanico();
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    panicAnimationContainer.startAnimation(scale);
+                    return true;
+                } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                    panicAnimationContainer.clearAnimation();
+                    Toast.makeText(this, "Corinthians!", Toast.LENGTH_SHORT).show();
+                    enviarMensagemPanico();
+                    return true;
+                }
+                return false;
             }
         });
 
