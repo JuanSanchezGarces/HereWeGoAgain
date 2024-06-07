@@ -11,6 +11,9 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
 
     <uses-feature
         android:name="android.hardware.telephony"
@@ -42,6 +45,13 @@
         <activity
             android:name=".AddReminderActivity"
             android:exported="false" />
+        <receiver android:name=".ReminderReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
         <activity
             android:name=".SplashScreenActivity"
             android:exported="true"> <!-- Mude para "true" para permitir que a atividade seja exportada -->
