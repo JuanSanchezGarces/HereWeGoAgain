@@ -12,8 +12,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -36,6 +34,11 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 public class AddReminderActivity extends AppCompatActivity implements ReminderAdapter.OnReminderRemovedListener {
 
@@ -136,8 +139,23 @@ public class AddReminderActivity extends AppCompatActivity implements ReminderAd
         long currentTimeMillis = System.currentTimeMillis();
         long delay = calendar.getTimeInMillis() - currentTimeMillis;
 
-        // Schedule notification
-        scheduleNotification(title, "É hora do seu lembrete!", delay);
+        // Schedule notification using WorkManager
+        Data data = new Data.Builder()
+                .putString("title", title)
+                .putString("message", "É hora do seu lembrete!")
+                .build();
+
+        OneTimeWorkRequest notificationWork = new OneTimeWorkRequest.Builder(NotificationWorker.class)
+                .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                .setInputData(data)
+                .build();
+
+        WorkManager.getInstance(this).enqueue(notificationWork);
+
+        // Immediate notification if the app is in foreground
+        if (delay <= 0) {
+            sendNotification((int) System.currentTimeMillis(), title, "É hora do seu lembrete!");
+        }
 
         Toast.makeText(this, "Lembrete adicionado", Toast.LENGTH_SHORT).show();
     }
@@ -161,39 +179,9 @@ public class AddReminderActivity extends AppCompatActivity implements ReminderAd
         saveReminders();
     }
 
-    private void scheduleNotification(String title, String message, long delay) {
-        Handler handler = new Handler(Looper.getMainLooper());
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                if (hasPermissions() && isNotificationChannelEnabled()) {
-                    sendNotification(title, message);
-                }
-            }
-        };
-        handler.postDelayed(runnable, delay);
-    }
-
-    private boolean hasPermissions() {
-        return ContextCompat.checkSelfPermission(this, Manifest.permission.VIBRATE) == PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(this, Manifest.permission.WAKE_LOCK) == PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET) == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private boolean isNotificationChannelEnabled() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            if (notificationManager != null) {
-                NotificationChannel channel = notificationManager.getNotificationChannel("reminder_channel");
-                return channel != null && channel.getImportance() != NotificationManager.IMPORTANCE_NONE;
-            }
-        }
-        return true; // Se não estiver no Android Oreo ou posterior, supõe-se que as notificações estão habilitadas
-    }
-
-    private void sendNotification(String title, String message) {
+    private void sendNotification(int notificationId, String title, String message) {
         try {
-            // Tentar enviar a notificação
+            // Try to send the notification
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "reminder_channel")
                     .setSmallIcon(R.drawable.ic_notification2)
                     .setContentTitle(title)
@@ -206,11 +194,11 @@ public class AddReminderActivity extends AppCompatActivity implements ReminderAd
             builder.setContentIntent(pendingIntent);
 
             NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-            notificationManager.notify(1, builder.build());
+            notificationManager.notify(notificationId, builder.build());
         } catch (SecurityException e) {
-            // Lidar com a exceção de segurança
+            // Handle the security exception
             e.printStackTrace();
-            // Por exemplo, mostrar uma mensagem de erro ao usuário
+            // For example, show an error message to the user
             Toast.makeText(this, "Erro ao enviar notificação: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
@@ -232,10 +220,10 @@ public class AddReminderActivity extends AppCompatActivity implements ReminderAd
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == NOTIFICATION_PERMISSION_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permissão concedida
+                // Permission granted
                 Toast.makeText(this, "Permissão concedida. Notificação será enviada.", Toast.LENGTH_SHORT).show();
             } else {
-                // Permissão negada
+                // Permission denied
                 Toast.makeText(this, "Permissão negada. Não será possível enviar a notificação.", Toast.LENGTH_SHORT).show();
             }
         }

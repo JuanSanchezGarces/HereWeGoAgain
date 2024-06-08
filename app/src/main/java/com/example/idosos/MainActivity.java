@@ -87,7 +87,6 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 } else if (event.getAction() == MotionEvent.ACTION_UP) {
                     panicAnimationContainer.clearAnimation();
-                    Toast.makeText(this, "Corinthians!", Toast.LENGTH_SHORT).show();
                     enviarMensagemPanico();
                     return true;
                 }
