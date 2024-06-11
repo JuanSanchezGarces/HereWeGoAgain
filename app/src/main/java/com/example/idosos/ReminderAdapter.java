@@ -33,20 +33,16 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.Remind
     @Override
     public void onBindViewHolder(@NonNull ReminderViewHolder holder, int position) {
         Reminder reminder = reminders.get(position);
-        holder.reminderTitleTextView.setText(reminder.getTitle());
-        holder.reminderDateTextView.setText(reminder.getDate());
-        holder.reminderTimeTextView.setText(reminder.getTime());
-        holder.trashIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int currentPosition = holder.getAdapterPosition();
-                if (currentPosition != RecyclerView.NO_POSITION) {
-                    reminders.remove(currentPosition);
-                    notifyItemRemoved(currentPosition);
-                    notifyItemRangeChanged(currentPosition, reminders.size());
-                    listener.onReminderRemoved();
-                }
-            }
+        holder.titleTextView.setText(reminder.getTitle());
+        holder.dateTextView.setText(reminder.getDate());
+        holder.timeTextView.setText(reminder.getTime());
+        holder.daysTextView.setText(getSelectedDays(reminder.getDaysOfWeek()));
+
+        holder.trashIcon.setOnClickListener(v -> {
+            reminders.remove(position);
+            notifyItemRemoved(position);
+            listener.onReminderRemoved();
+
         });
     }
 
@@ -55,17 +51,30 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.Remind
         return reminders.size();
     }
 
+    private String getSelectedDays(boolean[] daysOfWeek) {
+        StringBuilder selectedDays = new StringBuilder();
+        String[] dayNames = {"D", "S", "T", "Q", "Q", "S", "S"};
+        for (int i = 0; i < daysOfWeek.length; i++) {
+            if (daysOfWeek[i]) {
+                if (selectedDays.length() > 0) {
+                    selectedDays.append(", ");
+                }
+                selectedDays.append(dayNames[i]);
+            }
+        }
+        return selectedDays.toString();
+    }
+
     static class ReminderViewHolder extends RecyclerView.ViewHolder {
-        TextView reminderTitleTextView;
-        TextView reminderDateTextView;
-        TextView reminderTimeTextView;
+        TextView titleTextView, dateTextView, timeTextView, daysTextView;
         ImageView trashIcon;
 
         ReminderViewHolder(View itemView) {
             super(itemView);
-            reminderTitleTextView = itemView.findViewById(R.id.reminderTitleTextView);
-            reminderDateTextView = itemView.findViewById(R.id.reminderDateTextView);
-            reminderTimeTextView = itemView.findViewById(R.id.reminderTimeTextView);
+            titleTextView = itemView.findViewById(R.id.reminderTitleTextView);
+            dateTextView = itemView.findViewById(R.id.reminderDateTextView);
+            timeTextView = itemView.findViewById(R.id.reminderTimeTextView);
+            daysTextView = itemView.findViewById(R.id.reminderDaysTextView);
             trashIcon = itemView.findViewById(R.id.trashIcon);
         }
     }

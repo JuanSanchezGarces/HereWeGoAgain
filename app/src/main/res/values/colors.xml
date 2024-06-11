@@ -5,4 +5,6 @@
     <color name="yellow_bkg">#F7E64F</color>
     <color name="blue_bkg">#02173B</color>
     <color name="splashBackgroundColor">#02173B</color>
+    <color name="selected_day">#FF5733</color>
+    <color name="default_day">#D3D3D3</color>
 </resources>

@@ -1,18 +1,14 @@
 package com.example.idosos;
 
-import android.Manifest;
 import android.app.DatePickerDialog;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -20,9 +16,6 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -52,14 +45,10 @@ public class AddReminderActivity extends AppCompatActivity implements ReminderAd
     private SharedPreferences sharedPreferences;
     private Gson gson;
 
-    private static final int NOTIFICATION_PERMISSION_CODE = 123;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.reminder_layout);
-
-        createNotificationChannel();
 
         sharedPreferences = getSharedPreferences("Reminders", Context.MODE_PRIVATE);
         gson = new Gson();
@@ -108,9 +97,7 @@ public class AddReminderActivity extends AppCompatActivity implements ReminderAd
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int minute = calendar.get(Calendar.MINUTE);
 
-        TimePickerDialog timePickerDialog = new TimePickerDialog(
-                this,
-                (view, hourOfDay, minute1) -> {
+        TimePickerDialog timePickerDialog = new TimePickerDialog(this, (view, hourOfDay, minute1) -> {
                     calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
                     calendar.set(Calendar.MINUTE, minute1);
                     selectedTimeTextView.setText(String.format("%02d:%02d", hourOfDay, minute1));
@@ -130,16 +117,42 @@ public class AddReminderActivity extends AppCompatActivity implements ReminderAd
             return;
         }
 
-        Reminder reminder = new Reminder(title, date, time);
+        // Get days of the week
+        boolean[] daysOfWeek = new boolean[7];
+        daysOfWeek[0] = ((CheckBox) findViewById(R.id.checkBoxSunday)).isChecked();
+        daysOfWeek[1] = ((CheckBox) findViewById(R.id.checkBoxMonday)).isChecked();
+        daysOfWeek[2] = ((CheckBox) findViewById(R.id.checkBoxTuesday)).isChecked();
+        daysOfWeek[3] = ((CheckBox) findViewById(R.id.checkBoxWednesday)).isChecked();
+        daysOfWeek[4] = ((CheckBox) findViewById(R.id.checkBoxThursday)).isChecked();
+        daysOfWeek[5] = ((CheckBox) findViewById(R.id.checkBoxFriday)).isChecked();
+        daysOfWeek[6] = ((CheckBox) findViewById(R.id.checkBoxSaturday)).isChecked();
+
+        Reminder reminder = new Reminder(title, date, time, daysOfWeek);
         reminders.add(reminder);
         reminderAdapter.notifyDataSetChanged();
         saveReminders();
 
-        // Calculate delay
-        long currentTimeMillis = System.currentTimeMillis();
-        long delay = calendar.getTimeInMillis() - currentTimeMillis;
+        // Schedule notifications for each selected day
+        for (int i = 0; i < daysOfWeek.length; i++) {
+            if (daysOfWeek[i]) {
+                scheduleNotification(title, time, i);
+            }
+        }
 
-        // Schedule notification using WorkManager
+        Toast.makeText(this, "Lembrete adicionado", Toast.LENGTH_SHORT).show();
+    }
+
+    private void scheduleNotification(String title, String time, int dayOfWeek) {
+        Calendar now = Calendar.getInstance();
+        Calendar notificationTime = (Calendar) calendar.clone();
+        notificationTime.set(Calendar.DAY_OF_WEEK, dayOfWeek + 1);
+
+        if (notificationTime.before(now)) {
+            notificationTime.add(Calendar.WEEK_OF_YEAR, 1);
+        }
+
+        long delay = notificationTime.getTimeInMillis() - now.getTimeInMillis();
+
         Data data = new Data.Builder()
                 .putString("title", title)
                 .putString("message", "É hora do seu lembrete!")
@@ -151,13 +164,6 @@ public class AddReminderActivity extends AppCompatActivity implements ReminderAd
                 .build();
 
         WorkManager.getInstance(this).enqueue(notificationWork);
-
-        // Immediate notification if the app is in foreground
-        if (delay <= 0) {
-            sendNotification((int) System.currentTimeMillis(), title, "É hora do seu lembrete!");
-        }
-
-        Toast.makeText(this, "Lembrete adicionado", Toast.LENGTH_SHORT).show();
     }
 
     private void saveReminders() {
@@ -178,54 +184,9 @@ public class AddReminderActivity extends AppCompatActivity implements ReminderAd
     public void onReminderRemoved() {
         saveReminders();
     }
-
-    private void sendNotification(int notificationId, String title, String message) {
-        try {
-            // Try to send the notification
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "reminder_channel")
-                    .setSmallIcon(R.drawable.ic_notification2)
-                    .setContentTitle(title)
-                    .setContentText(message)
-                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                    .setAutoCancel(true);
-
-            Intent intent = new Intent(this, MainActivity.class);
-            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
-            builder.setContentIntent(pendingIntent);
-
-            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-            notificationManager.notify(notificationId, builder.build());
-        } catch (SecurityException e) {
-            // Handle the security exception
-            e.printStackTrace();
-            // For example, show an error message to the user
-            Toast.makeText(this, "Erro ao enviar notificação: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "Reminder Channel";
-            String description = "Channel for Reminder Notifications";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel("reminder_channel", name, importance);
-            channel.setDescription(description);
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == NOTIFICATION_PERMISSION_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission granted
-                Toast.makeText(this, "Permissão concedida. Notificação será enviada.", Toast.LENGTH_SHORT).show();
-            } else {
-                // Permission denied
-                Toast.makeText(this, "Permissão negada. Não será possível enviar a notificação.", Toast.LENGTH_SHORT).show();
-            }
-        }
+    public void voltarParaPaginaInicial(View view) {
+        Intent intent = new Intent(this, MainActivity.class); // Substitua "MainActivity" pelo nome da sua classe principal, se for diferente.
+        startActivity(intent);
     }
 }
+

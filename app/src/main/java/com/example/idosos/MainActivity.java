@@ -40,9 +40,6 @@ public class MainActivity extends AppCompatActivity {
         // Solicitar permissões necessárias
         solicitarPermissoes();
 
-        Intent serviceIntent = new Intent(this, QuedaDetectService.class);
-        this.startService(serviceIntent);
-
         quedaDetect = new QuedaDetect(this);
         statusTextView = findViewById(R.id.statusTextView);
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
@@ -124,8 +121,6 @@ public class MainActivity extends AppCompatActivity {
         sensorManager.unregisterListener(quedaDetect);
         quedaDetect.pararDetecao();
 
-        Intent serviceIntent = new Intent(this, QuedaDetectService.class);
-        this.stopService(serviceIntent);
     }
 
     @Override

@@ -38,6 +38,14 @@
             android:textColor="#555555"
             android:gravity="start"/>
 
+        <TextView
+            android:id="@+id/reminderDaysTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="#555555"
+            android:gravity="start"/>
+
         <ImageView
             android:id="@+id/trashIcon"
             android:layout_width="24dp"

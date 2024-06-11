@@ -1,19 +1,24 @@
 package com.example.idosos;
 
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
-import android.os.Build;
-import androidx.core.app.NotificationCompat;
+import android.content.Intent;
+import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 public class NotificationWorker extends Worker {
 
-    public NotificationWorker(Context context, WorkerParameters params) {
-        super(context, params);
+    private static final String CHANNEL_ID = "reminder_channel";
+
+    public NotificationWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
+        super(context, workerParams);
     }
 
+    @NonNull
     @Override
     public Result doWork() {
         String title = getInputData().getString("title");
@@ -25,23 +30,21 @@ public class NotificationWorker extends Worker {
     }
 
     private void sendNotification(String title, String message) {
-        NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
-        String channelId = "reminder_channel";
+        Context context = getApplicationContext();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(channelId, "Reminder Channel", NotificationManager.IMPORTANCE_DEFAULT);
-            notificationManager.createNotificationChannel(channel);
-        }
+        Intent notificationIntent = new Intent(context, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), channelId)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_notification2)
                 .setContentTitle(title)
                 .setContentText(message)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setContentIntent(pendingIntent)
                 .setAutoCancel(true);
 
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
         notificationManager.notify((int) System.currentTimeMillis(), builder.build());
     }
 }
-
 

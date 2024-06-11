@@ -80,6 +80,59 @@
                 android:layout_marginStart="8dp"/>
         </LinearLayout>
 
+        <!-- Day of Week Selector -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="16dp">
+
+            <!-- CheckBoxes for days of the week -->
+            <CheckBox
+                android:id="@+id/checkBoxSunday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="D" />
+
+            <CheckBox
+                android:id="@+id/checkBoxMonday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="S" />
+
+            <CheckBox
+                android:id="@+id/checkBoxTuesday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="T" />
+
+            <CheckBox
+                android:id="@+id/checkBoxWednesday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Q" />
+
+            <CheckBox
+                android:id="@+id/checkBoxThursday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Q" />
+
+            <CheckBox
+                android:id="@+id/checkBoxFriday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="S" />
+
+            <CheckBox
+                android:id="@+id/checkBoxSaturday"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="S" />
+        </LinearLayout>
+
+
         <!-- Add Reminder Button -->
         <Button
             android:id="@+id/addReminderButton"
