@@ -1,8 +1,8 @@
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".AddReminderActivity">
 
     <!-- Background image -->
@@ -14,151 +14,212 @@
         android:contentDescription="Background Image"
         android:alpha="0.2" />
 
+    <!-- Container principal com orientação vertical -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:orientation="vertical">
 
-        <!-- Title EditText -->
-        <EditText
-            android:id="@+id/reminderTitleEditText"
+        <!-- CardView para os elementos do lembrete -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Título"
-            android:inputType="text"
-            android:gravity="start"
-            android:layout_marginBottom="16dp"/>
+            android:layout_margin="16dp">
 
-        <!-- Date Picker Icon -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="16dp">
-
-            <ImageView
-                android:id="@+id/calendarIcon"
-                android:layout_width="52dp"
-                android:layout_height="52dp"
-                android:src="@drawable/ic_calendar"
-                android:contentDescription="Escolher Data"
-                android:padding="8dp" />
-
-            <TextView
-                android:id="@+id/selectedDateTextView"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Escolha a data"
-                android:textSize="16sp"
-                android:layout_marginStart="8dp"/>
-        </LinearLayout>
+                android:orientation="vertical"
+                android:padding="16dp">
 
-        <!-- Time Picker Icon -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="16dp">
+                <!-- Título do lembrete -->
+                <EditText
+                    android:id="@+id/reminderTitleEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Título"
+                    android:inputType="text"
+                    android:gravity="start"
+                    android:layout_marginBottom="16dp"/>
 
-            <ImageView
-                android:id="@+id/timeIcon"
-                android:layout_width="52dp"
-                android:layout_height="52dp"
-                android:src="@drawable/ic_clock"
-                android:contentDescription="Escolher Hora"
-                android:padding="8dp" />
+                <!-- Layout para ícone de data e texto selecionado -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="16dp">
 
-            <TextView
-                android:id="@+id/selectedTimeTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Escolha o horário"
-                android:textSize="16sp"
-                android:layout_marginStart="8dp"/>
-        </LinearLayout>
+                    <ImageView
+                        android:id="@+id/calendarIcon"
+                        android:layout_width="52dp"
+                        android:layout_height="52dp"
+                        android:src="@drawable/ic_calendar"
+                        android:contentDescription="Escolher Data"
+                        android:padding="8dp" />
 
-        <!-- Day of Week Selector -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="16dp">
+                    <TextView
+                        android:id="@+id/selectedDateTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Escolha a data"
+                        android:textSize="16sp"
+                        android:layout_marginStart="8dp"/>
+                </LinearLayout>
 
-            <!-- CheckBoxes for days of the week -->
-            <CheckBox
-                android:id="@+id/checkBoxSunday"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="D" />
+                <!-- Layout para ícone de hora e texto selecionado -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="16dp">
 
-            <CheckBox
-                android:id="@+id/checkBoxMonday"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="S" />
+                    <ImageView
+                        android:id="@+id/timeIcon"
+                        android:layout_width="52dp"
+                        android:layout_height="52dp"
+                        android:src="@drawable/ic_clock"
+                        android:contentDescription="Escolher Hora"
+                        android:padding="8dp" />
 
-            <CheckBox
-                android:id="@+id/checkBoxTuesday"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="T" />
+                    <TextView
+                        android:id="@+id/selectedTimeTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Escolha o horário"
+                        android:textSize="16sp"
+                        android:layout_marginStart="8dp"/>
+                </LinearLayout>
 
-            <CheckBox
-                android:id="@+id/checkBoxWednesday"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Q" />
+                <!-- Layout para seleção dos dias da semana -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:layout_marginBottom="16dp">
 
-            <CheckBox
-                android:id="@+id/checkBoxThursday"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Q" />
+                    <TextView
+                        android:id="@+id/daySunday"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:text="D"
+                        android:gravity="center"
+                        android:textSize="16sp"
+                        android:background="@drawable/day_selector"
+                        android:textColor="#FF0000"
+                        android:layout_margin="4dp"
+                        android:clickable="true"
+                        android:focusable="true"/>
 
-            <CheckBox
-                android:id="@+id/checkBoxFriday"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="S" />
+                    <TextView
+                        android:id="@+id/dayMonday"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:text="S"
+                        android:gravity="center"
+                        android:textSize="16sp"
+                        android:background="@drawable/day_selector"
+                        android:textColor="@android:color/black"
+                        android:layout_margin="4dp"
+                        android:clickable="true"
+                        android:focusable="true"/>
 
-            <CheckBox
-                android:id="@+id/checkBoxSaturday"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="S" />
-        </LinearLayout>
+                    <TextView
+                        android:id="@+id/dayTuesday"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:text="T"
+                        android:gravity="center"
+                        android:textSize="16sp"
+                        android:background="@drawable/day_selector"
+                        android:textColor="@android:color/black"
+                        android:layout_margin="4dp"
+                        android:clickable="true"
+                        android:focusable="true"/>
 
+                    <TextView
+                        android:id="@+id/dayWednesday"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:text="Q"
+                        android:gravity="center"
+                        android:textSize="16sp"
+                        android:background="@drawable/day_selector"
+                        android:textColor="@android:color/black"
+                        android:layout_margin="4dp"
+                        android:clickable="true"
+                        android:focusable="true"/>
 
-        <!-- Add Reminder Button -->
+                    <TextView
+                        android:id="@+id/dayThursday"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:text="Q"
+                        android:gravity="center"
+                        android:textSize="16sp"
+                        android:background="@drawable/day_selector"
+                        android:textColor="@android:color/black"
+                        android:layout_margin="4dp"
+                        android:clickable="true"
+                        android:focusable="true"/>
+
+                    <TextView
+                        android:id="@+id/dayFriday"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:text="S"
+                        android:gravity="center"
+                        android:textSize="16sp"
+                        android:background="@drawable/day_selector"
+                        android:textColor="@android:color/black"
+                        android:layout_margin="4dp"
+                        android:clickable="true"
+                        android:focusable="true"/>
+
+                    <TextView
+                        android:id="@+id/daySaturday"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:text="S"
+                        android:gravity="center"
+                        android:textSize="16sp"
+                        android:background="@drawable/day_selector"
+                        android:textColor="@android:color/black"
+                        android:layout_margin="4dp"
+                        android:clickable="true"
+                        android:focusable="true"/>
+                </LinearLayout>
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Botão Adicionar Lembrete -->
         <Button
             android:id="@+id/addReminderButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Adicionar Lembrete"
-            android:layout_marginTop="16dp"
             android:textColor="#FFFFFF"
             android:backgroundTint="#FF5733"
             android:padding="12dp"
-            android:fontFamily="@font/montserrat"/>
+            android:fontFamily="@font/montserrat"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:layout_gravity="center_horizontal" />
 
-        <!-- RecyclerView for Saved Reminders -->
+        <!-- RecyclerView para exibir lembretes salvos -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/remindersRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_marginTop="16dp"/>
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"/>
 
-        <!-- Espaçador vazio para empurrar o botão para a parte inferior -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-
+        <!-- Botão para voltar à Página Inicial -->
         <Button
             android:id="@+id/voltarParaPaginaInicial"
             android:layout_width="match_parent"
@@ -169,5 +230,7 @@
             android:layout_marginTop="16dp"
             android:onClick="voltarParaPaginaInicial"
             android:fontFamily="@font/montserrat" />
+
     </LinearLayout>
-</FrameLayout>
+
+</RelativeLayout>

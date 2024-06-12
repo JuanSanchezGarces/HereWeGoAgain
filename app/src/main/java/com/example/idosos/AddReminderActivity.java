@@ -6,29 +6,27 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.view.View;
+import android.app.PendingIntent;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import android.graphics.Color;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
 import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
@@ -73,6 +71,8 @@ public class AddReminderActivity extends AppCompatActivity implements ReminderAd
 
         ImageView timeIcon = findViewById(R.id.timeIcon);
         timeIcon.setOnClickListener(v -> openTimePicker());
+
+        initializeDayOfWeekSelection();
     }
 
     private void openDatePicker() {
@@ -98,14 +98,29 @@ public class AddReminderActivity extends AppCompatActivity implements ReminderAd
         int minute = calendar.get(Calendar.MINUTE);
 
         TimePickerDialog timePickerDialog = new TimePickerDialog(this, (view, hourOfDay, minute1) -> {
-                    calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                    calendar.set(Calendar.MINUTE, minute1);
-                    selectedTimeTextView.setText(String.format("%02d:%02d", hourOfDay, minute1));
-                },
+            calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+            calendar.set(Calendar.MINUTE, minute1);
+            selectedTimeTextView.setText(String.format("%02d:%02d", hourOfDay, minute1));
+        },
                 hour, minute, true
         );
         timePickerDialog.show();
     }
+
+    private void resetDaysOfWeek() {
+        int[] dayIds = new int[] {
+                R.id.daySunday, R.id.dayMonday, R.id.dayTuesday,
+                R.id.dayWednesday, R.id.dayThursday,
+                R.id.dayFriday, R.id.daySaturday
+        };
+
+        for (int dayId : dayIds) {
+            TextView dayTextView = findViewById(dayId);
+            dayTextView.setSelected(false);
+            dayTextView.setTextColor(Color.BLACK); // Ajusta a cor do texto conforme necessário
+        }
+    }
+
 
     private void addReminder() {
         String title = reminderTitleEditText.getText().toString();
@@ -119,13 +134,13 @@ public class AddReminderActivity extends AppCompatActivity implements ReminderAd
 
         // Get days of the week
         boolean[] daysOfWeek = new boolean[7];
-        daysOfWeek[0] = ((CheckBox) findViewById(R.id.checkBoxSunday)).isChecked();
-        daysOfWeek[1] = ((CheckBox) findViewById(R.id.checkBoxMonday)).isChecked();
-        daysOfWeek[2] = ((CheckBox) findViewById(R.id.checkBoxTuesday)).isChecked();
-        daysOfWeek[3] = ((CheckBox) findViewById(R.id.checkBoxWednesday)).isChecked();
-        daysOfWeek[4] = ((CheckBox) findViewById(R.id.checkBoxThursday)).isChecked();
-        daysOfWeek[5] = ((CheckBox) findViewById(R.id.checkBoxFriday)).isChecked();
-        daysOfWeek[6] = ((CheckBox) findViewById(R.id.checkBoxSaturday)).isChecked();
+        daysOfWeek[0] = findViewById(R.id.daySunday).isSelected();
+        daysOfWeek[1] = findViewById(R.id.dayMonday).isSelected();
+        daysOfWeek[2] = findViewById(R.id.dayTuesday).isSelected();
+        daysOfWeek[3] = findViewById(R.id.dayWednesday).isSelected();
+        daysOfWeek[4] = findViewById(R.id.dayThursday).isSelected();
+        daysOfWeek[5] = findViewById(R.id.dayFriday).isSelected();
+        daysOfWeek[6] = findViewById(R.id.daySaturday).isSelected();
 
         Reminder reminder = new Reminder(title, date, time, daysOfWeek);
         reminders.add(reminder);
@@ -135,14 +150,23 @@ public class AddReminderActivity extends AppCompatActivity implements ReminderAd
         // Schedule notifications for each selected day
         for (int i = 0; i < daysOfWeek.length; i++) {
             if (daysOfWeek[i]) {
-                scheduleNotification(title, time, i);
+                scheduleNotification(reminder, i);
             }
         }
 
         Toast.makeText(this, "Lembrete adicionado", Toast.LENGTH_SHORT).show();
+
+        // Reset fields
+        reminderTitleEditText.setText("");
+        selectedDateTextView.setText("Escolha a data");
+        selectedTimeTextView.setText("Escolha o horário");
+
+        // Reset days of the week to unselected
+        resetDaysOfWeek();
     }
 
-    private void scheduleNotification(String title, String time, int dayOfWeek) {
+
+    private void scheduleNotification(Reminder reminder, int dayOfWeek) {
         Calendar now = Calendar.getInstance();
         Calendar notificationTime = (Calendar) calendar.clone();
         notificationTime.set(Calendar.DAY_OF_WEEK, dayOfWeek + 1);
@@ -154,7 +178,7 @@ public class AddReminderActivity extends AppCompatActivity implements ReminderAd
         long delay = notificationTime.getTimeInMillis() - now.getTimeInMillis();
 
         Data data = new Data.Builder()
-                .putString("title", title)
+                .putString("title", reminder.getTitle())
                 .putString("message", "É hora do seu lembrete!")
                 .build();
 
@@ -181,12 +205,57 @@ public class AddReminderActivity extends AppCompatActivity implements ReminderAd
     }
 
     @Override
-    public void onReminderRemoved() {
+    public void onReminderRemoved(Reminder reminder) {
+        cancelReminderNotification(reminder);
+        reminders.remove(reminder); // Remove o lembrete da lista
+        reminderAdapter.notifyDataSetChanged();
         saveReminders();
     }
+
+    private void cancelReminderNotification(Reminder reminder) {
+        // Cancele a notificação para cada dia da semana associado ao lembrete
+        for (int i = 0; i < reminder.getDaysOfWeek().length; i++) {
+            if (reminder.getDaysOfWeek()[i]) {
+                cancelNotificationForDay(reminder, i);
+            }
+        }
+    }
+
+    private void cancelNotificationForDay(Reminder reminder, int dayOfWeek) {
+        Intent intent = new Intent(this, ReminderReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                this,
+                reminder.hashCode() + dayOfWeek,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+
+        pendingIntent.cancel(); // Cancela o PendingIntent associado à notificação
+    }
+
+    private void setupDayOfWeekSelection(final TextView dayView) {
+        dayView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean isSelected = dayView.isSelected();
+                dayView.setSelected(!isSelected);
+                dayView.setTextColor(isSelected ? ContextCompat.getColor(getApplicationContext(), android.R.color.black) : ContextCompat.getColor(getApplicationContext(), android.R.color.white));
+            }
+        });
+    }
+
+    private void initializeDayOfWeekSelection() {
+        setupDayOfWeekSelection(findViewById(R.id.daySunday));
+        setupDayOfWeekSelection(findViewById(R.id.dayMonday));
+        setupDayOfWeekSelection(findViewById(R.id.dayTuesday));
+        setupDayOfWeekSelection(findViewById(R.id.dayWednesday));
+        setupDayOfWeekSelection(findViewById(R.id.dayThursday));
+        setupDayOfWeekSelection(findViewById(R.id.dayFriday));
+        setupDayOfWeekSelection(findViewById(R.id.daySaturday));
+    }
+
     public void voltarParaPaginaInicial(View view) {
         Intent intent = new Intent(this, MainActivity.class); // Substitua "MainActivity" pelo nome da sua classe principal, se for diferente.
         startActivity(intent);
     }
 }
-

@@ -15,7 +15,7 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.Remind
     private OnReminderRemovedListener listener;
 
     public interface OnReminderRemovedListener {
-        void onReminderRemoved();
+        void onReminderRemoved(Reminder reminder);
     }
 
     public ReminderAdapter(List<Reminder> reminders, OnReminderRemovedListener listener) {
@@ -39,10 +39,9 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.Remind
         holder.daysTextView.setText(getSelectedDays(reminder.getDaysOfWeek()));
 
         holder.trashIcon.setOnClickListener(v -> {
-            reminders.remove(position);
+            Reminder removedReminder = reminders.remove(position);
             notifyItemRemoved(position);
-            listener.onReminderRemoved();
-
+            listener.onReminderRemoved(removedReminder);
         });
     }
 

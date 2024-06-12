@@ -1,20 +1,19 @@
 package com.example.idosos;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.telephony.SmsManager;
 import android.widget.Toast;
+import android.content.pm.PackageManager;
 
-import androidx.core.app.ActivityCompat;
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 public class EnviarSMS {
-    private String mensagemBase = "LOOKOUT! O Dispositivo detectou uma possível queda!";
+    private String mensagemBase = "Alerta aplicativo LOOKOUT! Uma possível queda foi detectada.";
     private Context context;
     private LocationManager locationManager;
 
@@ -44,12 +43,17 @@ public class EnviarSMS {
     }
 
     private void obterLocalizacaoEEnviarLink(final String numeroDestino) {
-
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+
+        if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(context, "Permissão de localização não concedida.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         LocationListener locationListener = new LocationListener() {
             @Override
-            public void onLocationChanged(Location location) {
-                String linkLocalizacao = "https://google.com/maps/search/?api=1&query=" + location.getLatitude() + "," + location.getLongitude();
+            public void onLocationChanged(@NonNull Location location) {
+                String linkLocalizacao = "https://maps.google.com/?q=" + location.getLatitude() + "," + location.getLongitude();
                 enviarSMS(numeroDestino, linkLocalizacao);
                 locationManager.removeUpdates(this);
             }
@@ -64,6 +68,7 @@ public class EnviarSMS {
             public void onProviderDisabled(String provider) {}
         };
 
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
     }
 
     private void enviarSMS(String numeroDestino, String mensagem) {
