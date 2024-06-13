@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
+import java.util.UUID;
 
 public class AddReminderActivity extends AppCompatActivity implements ReminderAdapter.OnReminderRemovedListener {
 
@@ -188,6 +189,7 @@ public class AddReminderActivity extends AppCompatActivity implements ReminderAd
                 .build();
 
         WorkManager.getInstance(this).enqueue(notificationWork);
+        reminder.addWorkRequestId(notificationWork.getId());
     }
 
     private void saveReminders() {
@@ -206,11 +208,19 @@ public class AddReminderActivity extends AppCompatActivity implements ReminderAd
 
     @Override
     public void onReminderRemoved(Reminder reminder) {
-        cancelReminderNotification(reminder);
+        // Cancele todas as requisições de trabalho associadas ao lembrete
+        for (UUID workRequestId : reminder.getWorkRequestIds()) {
+            WorkManager.getInstance(this).cancelWorkById(workRequestId);
+        }
+
         reminders.remove(reminder); // Remove o lembrete da lista
         reminderAdapter.notifyDataSetChanged();
         saveReminders();
+
+        // Adiciona um Toast aqui para notificar o usuário
+        Toast.makeText(this, "Lembrete removido", Toast.LENGTH_SHORT).show();
     }
+
 
     private void cancelReminderNotification(Reminder reminder) {
         // Cancele a notificação para cada dia da semana associado ao lembrete
@@ -219,6 +229,7 @@ public class AddReminderActivity extends AppCompatActivity implements ReminderAd
                 cancelNotificationForDay(reminder, i);
             }
         }
+        reminder.getWorkRequestIds().clear();
     }
 
     private void cancelNotificationForDay(Reminder reminder, int dayOfWeek) {
